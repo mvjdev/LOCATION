@@ -1,7 +1,7 @@
 package maria.hei.gestion_location.controller;
 
 import maria.hei.gestion_location.entity.Offers;
-import maria.hei.gestion_location.service.OffersService;
+import maria.hei.gestion_location.service.OffersService.OffersService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

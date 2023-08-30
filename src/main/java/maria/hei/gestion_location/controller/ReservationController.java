@@ -2,7 +2,6 @@ package maria.hei.gestion_location.controller;
 
 import maria.hei.gestion_location.entity.Reservation;
 import maria.hei.gestion_location.repository.ReservationRepository;
-import maria.hei.gestion_location.service.PayementService;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;

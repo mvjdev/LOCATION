@@ -1,4 +1,4 @@
-package maria.hei.gestion_location.service;
+package maria.hei.gestion_location.service.OffersService;
 
 import maria.hei.gestion_location.entity.Offers;
 import maria.hei.gestion_location.repository.OffersRepository;

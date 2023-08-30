@@ -11,100 +11,132 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Repository
-public class UserRepository {
-
-    private Connection connection;
+public class UserRepository implements RepositoryInterface<User> {
+    private final Connection connection;
 
     public UserRepository(Connection connection) {
         this.connection = connection;
     }
 
-    public void createUser(User user) {
-        String sql = "INSERT INTO user (name, email, password,role) VALUES (?, ?, ?)";
+    @Override
+    public User getById(int id) {
+        User user = null;
+        String selectByIdSQL = "SELECT * FROM \"user\" WHERE id = ?";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getEmail());
-            preparedStatement.setString(3, user.getPassword());
-            preparedStatement.setString(3, user.getRole());
-            preparedStatement.executeUpdate();
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle the exception appropriately
-        }
-    }
+        try (PreparedStatement statement = connection.prepareStatement(selectByIdSQL)) {
+            statement.setInt(1, id);
+            ResultSet resultSet = statement.executeQuery();
 
-    public User getUserById(int userId) {
-        String sql = "SELECT id, name, email, password, role FROM user WHERE id = ?";
-
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, userId);
-
-            try (ResultSet resultSet = preparedStatement.executeQuery()) {
-                if (resultSet.next()) {
-                    return extractUserFromResultSet(resultSet);
-                }
+            if (resultSet.next()) {
+                user = new User(
+                        resultSet.getInt("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password")
+                );
             }
+
+            System.out.println("Data select by id query executed successfully!");
         } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle the exception appropriately
+            System.out.println("Error executing select by id query: " + e.getMessage());
         }
 
-        return null;
+        return user;
     }
 
-    public List<User> getAllUsers() {
+    @Override
+    public List<User> getAll() {
         List<User> users = new ArrayList<>();
-        String sql = "SELECT id, name, email, password, role FROM user";
+        String selectAllSQL = "SELECT * FROM \"user\"";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql);
-             ResultSet resultSet = preparedStatement.executeQuery()) {
+        try (PreparedStatement preparedStatement = connection.prepareStatement(selectAllSQL)) {
+            ResultSet resultSet = preparedStatement.executeQuery();
             while (resultSet.next()) {
-                users.add(extractUserFromResultSet(resultSet));
+                users.add(new User(
+                        resultSet.getLong("id"),
+                        resultSet.getString("name"),
+                        resultSet.getString("email"),
+                        resultSet.getString("password")
+                ));
             }
-        } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle the exception appropriately
-        }
 
+            System.out.println("Data select all query executed successfully!");
+        } catch (SQLException e) {
+            System.out.println("Error executing select all query: " + e.getMessage());
+        }
+        System.out.println(users);
         return users;
     }
 
-    public void updateUser(User user) {
-        String sql = "UPDATE user SET name = ?, email = ?, password = ?, role = ? WHERE id = ?";
+    @Override
+    public User create(User user) {
+        String insertSQL = "INSERT INTO \"user\" (name, email, password) VALUES (?, ?, ?)";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setString(1, user.getName());
-            preparedStatement.setString(2, user.getEmail());
-            preparedStatement.setString(3, user.getPassword());
-            preparedStatement.setInt(4, user.getId());
-            preparedStatement.executeUpdate();
+        try (PreparedStatement statement = connection.prepareStatement(insertSQL, PreparedStatement.RETURN_GENERATED_KEYS)) {
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getPassword());
+
+            int affectedRows = statement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Creating user failed, no rows affected.");
+            }
+
+            try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
+                if (generatedKeys.next()) {
+                    user.setId(generatedKeys.getInt(1));
+                } else {
+                    throw new SQLException("Creating user failed, no ID obtained.");
+                }
+            }
+
+            System.out.println("Data create query executed successfully!");
         } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle the exception appropriately
+            System.out.println("Error executing create query: " + e.getMessage());
+        }
+
+        return user;
+    }
+
+    @Override
+    public void update(User user) {
+        String updateSQL = "UPDATE \"user\" SET name = ?, email = ?, password = ? WHERE id = ?";
+
+        try (PreparedStatement statement = connection.prepareStatement(updateSQL)) {
+            statement.setString(1, user.getName());
+            statement.setString(2, user.getEmail());
+            statement.setString(3, user.getPassword());
+            statement.setLong(4, user.getId());
+
+            int affectedRows = statement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Updating user failed, no rows affected.");
+            }
+
+            System.out.println("Data update query executed successfully!");
+        } catch (SQLException e) {
+            System.out.println("Error executing update query: " + e.getMessage());
         }
     }
 
-    public void deleteUser(int userId) {
-        String sql = "DELETE FROM user WHERE id = ?";
+    @Override
+    public void delete(int id) {
+        String deleteSQL = "DELETE FROM \"user\" WHERE id = ?";
 
-        try (PreparedStatement preparedStatement = connection.prepareStatement(sql)) {
-            preparedStatement.setInt(1, userId);
-            preparedStatement.executeUpdate();
+        try (PreparedStatement statement = connection.prepareStatement(deleteSQL)) {
+            statement.setInt(1, id);
+
+            int affectedRows = statement.executeUpdate();
+
+            if (affectedRows == 0) {
+                throw new SQLException("Deleting user failed, no rows affected.");
+            }
+
+            System.out.println("Data delete query executed successfully!");
         } catch (SQLException e) {
-            e.printStackTrace();
-            // Handle the exception appropriately
+            System.out.println("Error executing delete query: " + e.getMessage());
         }
-    }
-
-    private User extractUserFromResultSet(ResultSet resultSet) throws SQLException {
-        return new User(
-                resultSet.getInt("id"),
-                resultSet.getString("name"),
-                resultSet.getString("email"),
-                resultSet.getString("password"),
-                resultSet.getString("role")
-        );
     }
 }
-

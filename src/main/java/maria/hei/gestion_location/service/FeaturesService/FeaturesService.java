@@ -1,4 +1,4 @@
-package maria.hei.gestion_location.service;
+package maria.hei.gestion_location.service.FeaturesService;
 
 import maria.hei.gestion_location.entity.Features;
 import maria.hei.gestion_location.repository.FeaturesRepository;

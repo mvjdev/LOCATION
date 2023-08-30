@@ -7,12 +7,14 @@ import lombok.*;
 @Setter
 @ToString
 @EqualsAndHashCode
-
+@NoArgsConstructor(force = true)
 public class User {
-    private Integer id;
+    private long id;
     private String name;
     private String email;
     private String password;
-    private String role;
+
+    public User(int id, String name, String email, String password) {
+    }
 }
 

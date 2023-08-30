@@ -2,45 +2,40 @@ package maria.hei.gestion_location.controller;
 
 import maria.hei.gestion_location.entity.User;
 import maria.hei.gestion_location.repository.UserRepository;
-import maria.hei.gestion_location.service.UserService;
-import org.springframework.web.bind.annotation.*;
+import maria.hei.gestion_location.service.UserService.UserService;
+import org.springframework.http.ResponseEntity;
+import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
-import java.sql.Connection;
-import java.sql.SQLException;
 import java.util.List;
 
+@Controller
 @RestController
-@RequestMapping("/users")
+@RequestMapping("/user")
 public class UserController {
+    private final UserService userService;
 
-    private UserService userService;
-
-    public UserController(Connection connection){
-        this.userService = new UserService(new UserRepository(connection));
-    }
-
-    @PostMapping
-    public void createUser(@RequestBody User user) throws SQLException {
-        userService.createUser(user);
+    public UserController(UserService userService) {
+        this.userService = userService;
     }
 
     @GetMapping("/{id}")
-    public User getUserById(@PathVariable("id") int userId) throws SQLException {
-        return userService.getUserById(userId);
+    public ResponseEntity<User> getUserById(@PathVariable int id) {
+        User user = userService.getUserById(id);
+        if (user != null) {
+            return ResponseEntity.ok(user);
+        } else {
+            return ResponseEntity.notFound().build();
+        }
     }
 
     @GetMapping
-    public List<User> getAllUsers() throws SQLException {
-        return userService.getAllUsers();
+    public ResponseEntity<List<User>> getAllUsers() {
+        List<User> users = userService.getAllUsers();
+        return ResponseEntity.ok(users);
     }
 
-    @PutMapping
-    public void updateUser(@RequestBody User user) throws SQLException {
-        userService.updateUser(user);
-    }
-
-    @DeleteMapping("/{id}")
-    public void deleteUser(@PathVariable("id") int userId) throws SQLException {
-        userService.deleteUser(userId);
-    }
 }

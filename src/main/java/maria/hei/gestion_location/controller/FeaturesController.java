@@ -1,7 +1,7 @@
 package maria.hei.gestion_location.controller;
 
 import maria.hei.gestion_location.entity.Features;
-import maria.hei.gestion_location.service.FeaturesService;
+import maria.hei.gestion_location.service.FeaturesService.FeaturesService;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
