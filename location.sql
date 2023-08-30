@@ -7,6 +7,7 @@ CREATE TABLE "user" (
     name varchar,
     email varchar,
     password varchar,
+    role varchar,
     CONSTRAINT user_pk PRIMARY KEY (id)
 );
 
