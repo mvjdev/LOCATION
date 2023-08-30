@@ -1,51 +1,47 @@
 package maria.hei.gestion_location.controller;
 
 import maria.hei.gestion_location.entity.Payment;
-import maria.hei.gestion_location.repository.PaymentRepository;
-import org.springframework.http.ResponseEntity;
+import maria.hei.gestion_location.service.PaymentService.PaymentService;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.sql.SQLException;
 import java.util.List;
 
+@Controller
 @RestController
-@RequestMapping("/api/payments")
+@RequestMapping("/payments")
 public class PaymentController {
 
-    private final PaymentRepository paymentRepository;
+    private final PaymentService paymentService;
 
-    public PaymentController(PaymentRepository paymentRepository) {
-        this.paymentRepository = paymentRepository;
-    }
-
-    @PostMapping
-    public ResponseEntity<Void> createPayment(@RequestBody Payment payment) throws SQLException {
-        paymentRepository.createPayment(payment);
-        return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<Payment> getPaymentById(@PathVariable int id) throws SQLException {
-        Payment payment = paymentRepository.getPaymentById(id);
-        return ResponseEntity.ok(payment);
+    public PaymentController(PaymentService paymentService) {
+        this.paymentService = paymentService;
     }
 
     @GetMapping
-    public ResponseEntity<List<Payment>> getAllPayments() throws SQLException {
-        List<Payment> payments = paymentRepository.getAllPayments();
-        return ResponseEntity.ok(payments);
+    public List<Payment> getAllPayments() throws SQLException {
+        return paymentService.getAllPayments();
     }
 
-    @PutMapping("/{id}")
-    public ResponseEntity<Void> updatePayment(@PathVariable int id, @RequestBody Payment payment) throws SQLException {
-        payment.setId(id); // Set the ID based on the path variable
-        paymentRepository.updatePayment(payment);
-        return ResponseEntity.ok().build();
+    @GetMapping("/{paymentId}")
+    public Payment getPaymentById(@PathVariable int paymentId) throws SQLException {
+        return paymentService.getPaymentById(paymentId);
     }
 
-    @DeleteMapping("/{id}")
-    public ResponseEntity<Void> deletePayment(@PathVariable int id) throws SQLException {
-        paymentRepository.deletePayment(id);
-        return ResponseEntity.ok().build();
+    @PostMapping
+    public void createPayment(@RequestBody Payment payment) throws SQLException {
+        paymentService.createPayment(payment);
+    }
+
+    @PutMapping("/{paymentId}")
+    public void updatePayment(@PathVariable int paymentId, @RequestBody Payment payment) throws SQLException {
+        // Implémentation de la mise à jour du paiement
+        paymentService.updatePayment(payment);
+    }
+
+    @DeleteMapping("/{paymentId}")
+    public void deletePayment(@PathVariable int paymentId) throws SQLException {
+        paymentService.deletePayment(paymentId);
     }
 }

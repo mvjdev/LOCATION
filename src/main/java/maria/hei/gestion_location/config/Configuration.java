@@ -2,6 +2,7 @@ package maria.hei.gestion_location.config;
 
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.PropertySource;
 
 import java.sql.Connection;
@@ -20,8 +21,7 @@ public class Configuration {
         this.username = username;
         this.password = password;
     }
-
-    @Bean
+@Bean
     public Connection getConnection() throws SQLException {
         return DriverManager.getConnection(
                 "jdbc:postgresql://localhost:5432/location",

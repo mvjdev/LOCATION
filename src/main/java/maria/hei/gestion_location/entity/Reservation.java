@@ -9,6 +9,7 @@ import java.sql.Date;
 @Setter
 @ToString
 @EqualsAndHashCode
+@NoArgsConstructor
 public class Reservation {
     private int id;
     private Date startDate;

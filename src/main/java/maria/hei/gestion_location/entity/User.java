@@ -7,7 +7,7 @@ import lombok.*;
 @Setter
 @ToString
 @EqualsAndHashCode
-@NoArgsConstructor(force = true)
+@NoArgsConstructor
 public class User {
     private long id;
     private String name;

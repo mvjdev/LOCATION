@@ -1,28 +1,21 @@
 package maria.hei.gestion_location.controller;
 
 import maria.hei.gestion_location.entity.Offers;
-import maria.hei.gestion_location.service.OffersService.OffersService;
+import maria.hei.gestion_location.service.OffersService.OffersInterface;
+import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
+@Controller
 @RestController
 @RequestMapping("/offers")
 public class OffersController {
-    private OffersService offersService;
 
-    public OffersController(OffersService offersService) {
+    private final OffersInterface offersService;
+
+    public OffersController(OffersInterface offersService) {
         this.offersService = offersService;
-    }
-
-    @PostMapping
-    public void createOffer(@RequestBody Offers offer) {
-        offersService.createOffer(offer);
-    }
-
-    @GetMapping("/{id}")
-    public Offers getOfferById(@PathVariable int id) {
-        return offersService.getOfferById(id);
     }
 
     @GetMapping
@@ -30,13 +23,24 @@ public class OffersController {
         return offersService.getAllOffers();
     }
 
-    @PutMapping
-    public void updateOffer(@RequestBody Offers offer) {
+    @GetMapping("/{offerId}")
+    public Offers getOfferById(@PathVariable int offerId) {
+        return offersService.getOfferById(offerId);
+    }
+
+    @PostMapping
+    public void createOffer(@RequestBody Offers offer) {
+        offersService.createOffer(offer);
+    }
+
+    @PutMapping("/{offerId}")
+    public void updateOffer(@PathVariable int offerId, @RequestBody Offers offer) {
+        // Implement offer update logic using offersService
         offersService.updateOffer(offer);
     }
 
-    @DeleteMapping("/{id}")
-    public void deleteOffer(@PathVariable int id) {
-        offersService.deleteOffer(id);
+    @DeleteMapping("/{offerId}")
+    public void deleteOffer(@PathVariable int offerId) {
+        offersService.deleteOffer(offerId);
     }
 }

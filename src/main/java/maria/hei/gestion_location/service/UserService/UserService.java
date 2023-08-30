@@ -26,16 +26,16 @@ public class UserService implements UserInterface {
 
     @Override
     public User createUser(User user) {
-        return null;
+        return userRepository.create(user);
     }
 
     @Override
     public User updateUser(User user) {
-        return null;
+        return userRepository.update(user);
     }
 
     @Override
     public void deleteUser(int id) {
-
+        userRepository.delete(id);
     }
 }

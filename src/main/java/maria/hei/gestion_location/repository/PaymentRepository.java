@@ -1,80 +1,54 @@
-package maria.hei.gestion_location.repository;
+package maria.hei.gestion_location.service;
 
 import maria.hei.gestion_location.entity.Payment;
-import org.springframework.stereotype.Repository;
+import org.springframework.stereotype.Service;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
-@Repository
+@Service
 public class PaymentRepository {
 
-    private Connection connection;
+    private final List<Payment> paymentList = new ArrayList<>();
 
-    public void createPayment(Payment payment) throws SQLException {
-        String sql = "INSERT INTO payment (paid, method, reservation_id) VALUES (?, ?, ?)";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setBoolean(1, payment.isPaid());
-            statement.setString(2, payment.getMethod());
-            statement.setInt(3, payment.getReservationId());
-            statement.executeUpdate();
-        }
+    public void createPayment(Payment payment) {
+        paymentList.add(payment);
     }
 
-    public Payment getPaymentById(int paymentId) throws SQLException {
-        String sql = "SELECT * FROM payment WHERE id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, paymentId);
-            try (ResultSet resultSet = statement.executeQuery()) {
-                if (resultSet.next()) {
-                    return mapPayment(resultSet);
-                }
+    public Payment getPaymentById(int paymentId) {
+        for (Payment payment : paymentList) {
+            if (payment.getId() == paymentId) {
+                return payment;
             }
         }
         return null;
     }
 
-    public List<Payment> getAllPayments() throws SQLException {
-        String sql = "SELECT * FROM payment";
-        try (PreparedStatement statement = connection.prepareStatement(sql);
-             ResultSet resultSet = statement.executeQuery()) {
-            List<Payment> payments = new ArrayList<>();
-            while (resultSet.next()) {
-                Payment payment = mapPayment(resultSet);
-                payments.add(payment);
+    public List<Payment> getAllPayments() {
+        return paymentList;
+    }
+
+    public void updatePayment(Payment updatedPayment) {
+        for (Payment payment : paymentList) {
+            if (payment.getId() == updatedPayment.getId()) {
+                payment.setPaid(updatedPayment.isPaid());
+                payment.setMethod(updatedPayment.getMethod());
+                payment.setReservationId(updatedPayment.getReservationId());
+                break;
             }
-            return payments;
         }
     }
 
-    public void updatePayment(Payment payment) throws SQLException {
-        String sql = "UPDATE payment SET paid = ?, method = ?, reservation_id = ? WHERE id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setBoolean(1, payment.isPaid());
-            statement.setString(2, payment.getMethod());
-            statement.setInt(3, payment.getReservationId());
-            statement.setInt(4, payment.getId());
-            statement.executeUpdate();
+    public void deletePayment(int paymentId) {
+        Payment paymentToRemove = null;
+        for (Payment payment : paymentList) {
+            if (payment.getId() == paymentId) {
+                paymentToRemove = payment;
+                break;
+            }
         }
-    }
-
-    public void deletePayment(int paymentId) throws SQLException {
-        String sql = "DELETE FROM payment WHERE id = ?";
-        try (PreparedStatement statement = connection.prepareStatement(sql)) {
-            statement.setInt(1, paymentId);
-            statement.executeUpdate();
+        if (paymentToRemove != null) {
+            paymentList.remove(paymentToRemove);
         }
-    }
-
-    private Payment mapPayment(ResultSet resultSet) throws SQLException {
-        int id = resultSet.getInt("id");
-        boolean paid = resultSet.getBoolean("paid");
-        String method = resultSet.getString("method");
-        int reservationId = resultSet.getInt("reservation_id");
-        return new Payment(id, paid, method, reservationId);
     }
 }

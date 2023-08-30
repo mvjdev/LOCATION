@@ -80,27 +80,27 @@ public class UserRepository implements RepositoryInterface<User> {
             int affectedRows = statement.executeUpdate();
 
             if (affectedRows == 0) {
-                throw new SQLException("Creating user failed, no rows affected.");
+                throw new SQLException("Failed Creating");
             }
 
             try (ResultSet generatedKeys = statement.getGeneratedKeys()) {
                 if (generatedKeys.next()) {
                     user.setId(generatedKeys.getInt(1));
                 } else {
-                    throw new SQLException("Creating user failed, no ID obtained.");
+                    throw new SQLException("Failed creating");
                 }
             }
 
-            System.out.println("Data create query executed successfully!");
+            System.out.println("Successfully!");
         } catch (SQLException e) {
-            System.out.println("Error executing create query: " + e.getMessage());
+            System.out.println("Error query: " + e.getMessage());
         }
 
         return user;
     }
 
     @Override
-    public void update(User user) {
+    public User update(User user) {
         String updateSQL = "UPDATE \"user\" SET name = ?, email = ?, password = ? WHERE id = ?";
 
         try (PreparedStatement statement = connection.prepareStatement(updateSQL)) {
@@ -112,13 +112,14 @@ public class UserRepository implements RepositoryInterface<User> {
             int affectedRows = statement.executeUpdate();
 
             if (affectedRows == 0) {
-                throw new SQLException("Updating user failed, no rows affected.");
+                throw new SQLException("Failed updating");
             }
 
-            System.out.println("Data update query executed successfully!");
+            System.out.println("Successfully");
         } catch (SQLException e) {
-            System.out.println("Error executing update query: " + e.getMessage());
+            System.out.println("Error query: " + e.getMessage());
         }
+        return user;
     }
 
     @Override
@@ -131,12 +132,12 @@ public class UserRepository implements RepositoryInterface<User> {
             int affectedRows = statement.executeUpdate();
 
             if (affectedRows == 0) {
-                throw new SQLException("Deleting user failed, no rows affected.");
+                throw new SQLException("Failed deleting");
             }
 
-            System.out.println("Data delete query executed successfully!");
+            System.out.println("Successfully!");
         } catch (SQLException e) {
-            System.out.println("Error executing delete query: " + e.getMessage());
+            System.out.println("Error query: " + e.getMessage());
         }
     }
 }

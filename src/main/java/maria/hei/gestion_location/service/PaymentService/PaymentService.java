@@ -1,41 +1,45 @@
 package maria.hei.gestion_location.service.PaymentService;
 
 import maria.hei.gestion_location.entity.Payment;
-import maria.hei.gestion_location.entity.Reservation;
+import maria.hei.gestion_location.repository.OffersRepository;
+import maria.hei.gestion_location.service.PaymentRepository;
 import org.springframework.stereotype.Service;
 
+import java.sql.SQLException;
 import java.util.List;
 
 @Service
 
-public class PaymentService implements PaymentInterface{
-    private final PaymentInterface<Payment> paymentRepository ;
+public class PaymentService implements PaymentInterface {
 
-    public PaymentService(PaymentInterface<Payment> userRepository) {
+    private final PaymentRepository paymentRepository;
+
+    public PaymentService(PaymentRepository paymentRepository) {
         this.paymentRepository = paymentRepository;
     }
+
     @Override
-    public Payment createPayment(Payment payment) {
-        return null;
+    public void createPayment(Payment payment) throws SQLException {
+        paymentRepository.createPayment(payment);
     }
 
     @Override
-    public List<Payment> getAllPayments() {
-        return null;
+    public Payment getPaymentById(int paymentId) throws SQLException {
+        return paymentRepository.getPaymentById(paymentId);
     }
 
     @Override
-    public Payment getPaymentById(int id) {
-        return null;
+    public List<Payment> getAllPayments() throws SQLException {
+        return paymentRepository.getAllPayments();
     }
 
     @Override
-    public Payment updatePayment(Payment payment) {
-        return null;
+    public void updatePayment(Payment payment) throws SQLException {
+        paymentRepository.updatePayment(payment);
     }
 
     @Override
-    public void deletePayment(int id) {
-
+    public void deletePayment(int paymentId) throws SQLException {
+        paymentRepository.deletePayment(paymentId);
     }
 }
